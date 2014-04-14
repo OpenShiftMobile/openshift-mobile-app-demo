@@ -1,0 +1,53 @@
+{% load staticfiles %}
+<html>
+	<head>
+		<title>OSM Demo App | {{ questionnaire.title }}</title>
+		<meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!--meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /-->
+		<meta name="viewport" content="user-scalable=no,width=device-width,target-densitydpi=device-mdpi,initial-scale=1,maximum-scale=1"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/osm.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/rht.min.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.mobile.structure-1.3.2.min.css' %}" />
+	</head>
+	<body>
+		<div id="main" data-role="page">
+			<div data-role="header">
+				<h1>{{ questionnaire.title }}</h1>
+			</div>
+
+			<div data-role="content" data-theme="a">
+				<form action="{% url 'questionnaire:questionnaire' questionnaire.id %}" method="post">
+					{% csrf_token %}
+					{% if error %}
+						<div class="errors ui-corner-all">
+							Error: {{ error }}
+						</div>
+					{% endif %}
+					{% for s in questionnaire.section_set.all %}
+						<div class="section">
+							<span class="section-header">{{ s.name }}</span>
+							<br/><br/>
+							{% for q in s.questions.all %}
+								<label for="{{ q.name }}">{{ q.question }}</label>
+								{% if q.elem_type = 'textarea' %}
+									<textarea id="{{ q.name }}" name="{{ q.name }}"></textarea>
+								{% else %}
+									<input type="{{ q.elem_type }}" id="{{ q.name }}" {% if q.elem_type = 'checkbox' %}value="{{ q.name }}"{% endif %} name="{{ q.name }}"/>
+								{% endif %}
+							{% endfor %}
+						</div>
+						<br/>
+					{% endfor %}
+					<input type="submit" value="Submit"/>
+				</form>
+			</div>
+
+			<div data-role="footer" data-position="fixed">
+				&nbsp;&nbsp;&copy;OpenShift Mobile 2014
+			</div>
+		</div>
+		<script type="text/javascript" src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'js/jquery.mobile-1.3.2.min.js' %}"></script>
+	</body>
+</html>
