@@ -1,7 +1,18 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response,get_object_or_404
+from django.core.mail import send_mail
 from questionnaire.models import *
-import re
+import re,os
+
+body_template = """
+Thank you %s for your sumbission for the %s.
+
+We appreciate your help in improving the OpenShift Mobile Project.
+
+Thanks again,
+The OpenShift Mobile Team
+"""
+
 
 def index(request):
 	return render_to_response('questionnaire/questionnaire.html', {
@@ -49,7 +60,12 @@ def questionnaire(request,questionnaire_id):
 							user_questionnaire = resp
 						)
 						answer.save()
-			#TODO: Send email
+
+			if 'EMAIL_HOST' in os.environ:
+				subject,from_user = ('Thank You for You Submission!', os.environ['EMAIL_FROM'])
+				body = body_template % (email,questionnaire.title)
+				send_mail(subject,body,from_user,[email])
+
 			return render_to_response('questionnaire/thanks.html', {
 				'email' : email
 			},context_instance=RequestContext(request))
