@@ -1,4 +1,4 @@
 openshift-mobile-app-demo
 =========================
 
-Python Djano Demo App for showing app creation w/ embedded cartridges
+Python Django Demo App for showing app creation w/ embedded cartridges
